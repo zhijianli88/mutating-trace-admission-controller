@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trace-context-injector-webhook-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: trace-context-injector
+    spec:
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      nodeSelector:
+        kubernetes.io/hostname: master-1
+      containers:
+        - name: trace-context-injector
+          image: trace-context-injector:v1
+          imagePullPolicy: Never
+          args:
+            - -configPath=/etc/webhook/config/config.yaml
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook/certs
+              readOnly: true
+            - name: webhook-config
+              mountPath: /etc/webhook/config
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: trace-context-injector-webhook-certs
+        - name: webhook-config
+          configMap:
+            name: trace-context-injector-webhook-config-map
