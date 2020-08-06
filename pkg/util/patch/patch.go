@@ -26,7 +26,9 @@ func InjectPatch(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta
 		ar.Request.Kind, ar.Request.Namespace, ar.Request.Name, ar.Request.UID, ar.Request.Operation, ar.Request.UserInfo)
 
 	spanContext, err := trace.SpanContextFromRequestHeader(r)
+	fmt.Println("-----------------------------")
 	fmt.Printf("%+v\n", spanContext)
+	fmt.Println("-----------------------------")
 	if err != nil {
 		return &v1beta1.AdmissionResponse{
 			Allowed: true,
@@ -37,6 +39,8 @@ func InjectPatch(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta
 	switch ar.Request.Kind.Kind {
 	case "Deployment":
 		response = mutateDeployment(encodedSpanContext, ar.Request.Object.Raw)
+	case "ReplicaSet":
+		response = mutateReplicaSet(encodedSpanContext, ar.Request.Object.Raw)
 	case "StatefulSet":
 		response = mutateStatefulSet(encodedSpanContext, ar.Request.Object.Raw)
 	case "Pod":

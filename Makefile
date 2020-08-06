@@ -2,19 +2,20 @@ IMAGE=trace-context-injector:v1
 
 .PHONY: build
 build:
-	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o bin/webhook cmd/webhook/main.go
+	@CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o bin/webhook cmd/webhook/main.go
 
 docker:
-	docker build -f build/Dockerfile -t $(IMAGE) .
+	@docker build -f build/Dockerfile -t $(IMAGE) .
+	@docker save -o bin/$(IMAGE).tar $(IMAGE)
 
 install:
-	hack/webhook-create-signed-cert.sh --service trace-context-injector-webhook-svc --secret trace-context-injector-webhook-certs --namespace default
-	cat deploy/base/mutatingwebhook.yaml | hack/webhook-patch-ca-bundle.sh > deploy/base/mutatingwebhook-ca-bundle.yaml
-	./tools/kustomize build deploy/base | kubectl apply -f -
+	@hack/webhook-create-signed-cert.sh --service trace-context-injector-webhook-svc --secret trace-context-injector-webhook-certs --namespace default
+	@cat deploy/base/mutatingwebhook.yaml | hack/webhook-patch-ca-bundle.sh > deploy/base/mutatingwebhook-ca-bundle.yaml
+	@./tools/kustomize build deploy/base | kubectl apply -f -
 
 remove:
-	kubectl delete secret trace-context-injector-webhook-certs
-	./tools/kustomize build deploy/base | kubectl delete -f -
+	@kubectl delete secret trace-context-injector-webhook-certs
+	@./tools/kustomize build deploy/base | kubectl delete -f -
 
 .PHONY: test
 test:
@@ -22,5 +23,6 @@ test:
 	@kubectl delete -f test/yaml/Deployment.yaml
 
 clean:
-	rm deploy/base/mutatingwebhook-ca-bundle.yaml
-	docker rmi -f $(IMAGE)
+	@rm bin/*
+	@rm deploy/base/mutatingwebhook-ca-bundle.yaml
+	@docker rmi -f $(IMAGE)
