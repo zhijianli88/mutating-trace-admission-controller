@@ -10,11 +10,11 @@ docker:
 install:
 	hack/webhook-create-signed-cert.sh --service trace-context-injector-webhook-svc --secret trace-context-injector-webhook-certs --namespace default
 	cat deploy/base/mutatingwebhook.yaml | hack/webhook-patch-ca-bundle.sh > deploy/base/mutatingwebhook-ca-bundle.yaml
-	kustomize build deploy/base | kubectl apply -f -
+	./tools/kustomize build deploy/base | kubectl apply -f -
 
 remove:
 	kubectl delete secret trace-context-injector-webhook-certs
-	kustomize build deploy/base | kubectl delete -f -
+	./tools/kustomize build deploy/base | kubectl delete -f -
 
 .PHONY: test
 test:
