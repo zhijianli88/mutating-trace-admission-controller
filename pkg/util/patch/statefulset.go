@@ -21,13 +21,6 @@ func mutateStatefulSet(encodedSpanContext string, raw []byte) *v1beta1.Admission
 		}
 	}
 
-	// determine whether to perform mutation
-	if !mutationRequired(&StatefulSet.ObjectMeta) {
-		return &v1beta1.AdmissionResponse{
-			Allowed: true,
-		}
-	}
-
 	patchBytes, err := createPatch(StatefulSet.Annotations, encodedSpanContext)
 	if err != nil {
 		return &v1beta1.AdmissionResponse{

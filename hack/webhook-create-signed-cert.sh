@@ -129,3 +129,5 @@ kubectl create secret generic ${secret} \
         --from-file=cert.pem=${tmpdir}/server-cert.pem \
         --dry-run -o yaml |
     kubectl -n ${namespace} apply -f -
+
+rm -rf ${tmpdir}

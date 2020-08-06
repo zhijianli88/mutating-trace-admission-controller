@@ -13,8 +13,8 @@ import (
 
 var defaultFormat propagation.HTTPFormat = &b3.HTTPFormat{}
 
-// SpanContextFromRequest get span context from http request
-func SpanContextFromRequest(req *http.Request) (trace.SpanContext, error) {
+// SpanContextFromRequestHeader get span context from http request header
+func SpanContextFromRequestHeader(req *http.Request) (trace.SpanContext, error) {
 	spanContext, ok := defaultFormat.SpanContextFromRequest(req)
 	if !ok {
 		return trace.SpanContext{}, fmt.Errorf("")

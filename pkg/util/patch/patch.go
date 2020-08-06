@@ -2,6 +2,7 @@ package patch
 
 import (
 	"encoding/json"
+	"fmt"
 	"mutating-trace-admission-controller/pkg/util/trace"
 	"net/http"
 
@@ -24,7 +25,8 @@ func InjectPatch(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta
 	glog.V(3).Infof("AdmissionReview for Kind=%v, Namespace=%v Name=%v UID=%v patchOperation=%v UserInfo=%v",
 		ar.Request.Kind, ar.Request.Namespace, ar.Request.Name, ar.Request.UID, ar.Request.Operation, ar.Request.UserInfo)
 
-	spanContext, err := trace.SpanContextFromRequest(r)
+	spanContext, err := trace.SpanContextFromRequestHeader(r)
+	fmt.Printf("%+v\n", spanContext)
 	if err != nil {
 		return &v1beta1.AdmissionResponse{
 			Allowed: true,

@@ -21,13 +21,6 @@ func mutateReplicaSet(encodedSpanContext string, raw []byte) *v1beta1.AdmissionR
 		}
 	}
 
-	// determine whether to perform mutation
-	if !mutationRequired(&replicaSet.ObjectMeta) {
-		return &v1beta1.AdmissionResponse{
-			Allowed: true,
-		}
-	}
-
 	patchBytes, err := createPatch(replicaSet.Annotations, encodedSpanContext)
 	if err != nil {
 		return &v1beta1.AdmissionResponse{

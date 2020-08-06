@@ -21,13 +21,6 @@ func mutatePod(encodedSpanContext string, raw []byte) *v1beta1.AdmissionResponse
 		}
 	}
 
-	// determine whether to perform mutation
-	if !mutationRequired(&pod.ObjectMeta) {
-		return &v1beta1.AdmissionResponse{
-			Allowed: true,
-		}
-	}
-
 	patchBytes, err := createPatch(pod.Annotations, encodedSpanContext)
 	if err != nil {
 		return &v1beta1.AdmissionResponse{
