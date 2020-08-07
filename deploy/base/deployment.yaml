@@ -9,11 +9,11 @@ spec:
       labels:
         app: trace-context-injector
     spec:
-      tolerations:
-        - key: node-role.kubernetes.io/master
-          effect: NoSchedule
-      nodeSelector:
-        kubernetes.io/hostname: master-1
+      #tolerations:
+      #  - key: node-role.kubernetes.io/master
+      #    effect: NoSchedule
+      #nodeSelector:
+      #  kubernetes.io/hostname: master-1
       containers:
         - name: trace-context-injector
           image: trace-context-injector:v1

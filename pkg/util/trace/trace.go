@@ -37,7 +37,8 @@ func EncodeSpanContext(spanContext trace.SpanContext) string {
 	return encodedSpanContext
 }
 
-func decodeSpanContext(encodedSpanContext string) (trace.SpanContext, error) {
+// DecodeSpanContext encode span context from string
+func DecodeSpanContext(encodedSpanContext string) (trace.SpanContext, error) {
 	rawContextBytes := make([]byte, base64.StdEncoding.DecodedLen(len(encodedSpanContext)))
 	l, err := base64.StdEncoding.Decode(rawContextBytes, []byte(encodedSpanContext))
 	if err != nil {

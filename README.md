@@ -2,11 +2,6 @@
 
 [Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects base64 encoded [OpenCensus span context](https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/Span.md#spancontext) into the `trace.kubernetes.io/context` object annotation.
 
-## Purpose
-
-The trace context injected with this mutating controller can be used by Kubernetes components to export traces associated with object lifecycles. For more information on this effort, [please refer to the official KEP](https://github.com/kubernetes/enhancements/pull/650).
-
-
 ## Quick start
 
 The structure of this mutating admission controller was informed by the [mutating admission webhook found here](https://github.com/morvencao/kube-mutating-webhook-tutorial). The basic idea is as follows:
@@ -21,6 +16,7 @@ The included `Makefile` makes these steps straightforward and the available comm
 * `make docker`: build local Docker image
 * `make install`: apply certificate configuration and deployment configuration to cluster for the mutating webhook
 * `make remove`: delete resources associated with the mutating webhook from the active cluster
+* `make test`: apply and delete a deployment to test webhook
 
 There are example patches which can be used with `kustomize` to configure the deployment of this webhook into your cluster under `deploy/base/overlays/example`. This example custom configuration can be applied with:
 

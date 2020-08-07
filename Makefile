@@ -1,12 +1,14 @@
 IMAGE=trace-context-injector:v1
+OUTPUT=bin
 
 .PHONY: build
 build:
-	@CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o bin/webhook cmd/webhook/main.go
+	@mkdir -p $(OUTPUT)
+	@CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o $(OUTPUT)/webhook cmd/webhook/main.go
 
 docker:
 	@docker build -f build/Dockerfile -t $(IMAGE) .
-	@docker save -o bin/$(IMAGE).tar $(IMAGE)
+	@docker save -o $(OUTPUT)/$(IMAGE).tar $(IMAGE)
 
 install:
 	@hack/webhook-create-signed-cert.sh --service trace-context-injector-webhook-svc --secret trace-context-injector-webhook-certs --namespace default
@@ -23,6 +25,6 @@ test:
 	@kubectl delete -f test/yaml/Deployment.yaml
 
 clean:
-	@rm bin/*
-	@rm deploy/base/mutatingwebhook-ca-bundle.yaml
+	@rm -f $(OUTPUT)/*
+	@rm -f deploy/base/mutatingwebhook-ca-bundle.yaml
 	@docker rmi -f $(IMAGE)

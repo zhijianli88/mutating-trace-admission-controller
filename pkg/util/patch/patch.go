@@ -3,6 +3,7 @@ package patch
 import (
 	"encoding/json"
 	"fmt"
+	"mutating-trace-admission-controller/pkg/util/print"
 	"mutating-trace-admission-controller/pkg/util/trace"
 	"net/http"
 
@@ -27,6 +28,7 @@ func InjectPatch(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta
 
 	spanContext, err := trace.SpanContextFromRequestHeader(r)
 	fmt.Println("-----------------------------")
+	print.Request(r)
 	fmt.Printf("%+v\n", spanContext)
 	fmt.Println("-----------------------------")
 	if err != nil {
