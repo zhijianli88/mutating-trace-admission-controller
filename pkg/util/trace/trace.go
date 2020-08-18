@@ -1,53 +1,49 @@
 package trace
 
 import (
-	"context"
+	"bytes"
 	"encoding/base64"
-	"fmt"
+	"encoding/binary"
 	"net/http"
 
-	"go.opencensus.io/plugin/ochttp/propagation/b3"
-	"go.opencensus.io/trace"
-	"go.opencensus.io/trace/propagation"
+	apitrace "go.opentelemetry.io/otel/api/trace"
 )
 
-var defaultFormat propagation.HTTPFormat = &b3.HTTPFormat{}
+var defaultFormat apitrace.B3
 
 // SpanContextFromRequestHeader get span context from http request header
-func SpanContextFromRequestHeader(req *http.Request) (trace.SpanContext, error) {
-	spanContext, ok := defaultFormat.SpanContextFromRequest(req)
-	if !ok {
-		return trace.SpanContext{}, fmt.Errorf("")
-	}
-	return spanContext, nil
+func SpanContextFromRequestHeader(req *http.Request) apitrace.SpanContext {
+	ctx := defaultFormat.Extract(req.Context(), req.Header)
+	return apitrace.RemoteSpanContextFromContext(ctx)
 }
 
-// GenerateEncodedSpanContext takes a SpanContext and returns a serialized string
-func GenerateEncodedSpanContext() string {
-	_, span := trace.StartSpan(context.Background(), "")
-	// should not be exported, purpose of this span is to retrieve OC compliant SpanContext
-	spanContext := span.SpanContext()
-	return EncodeSpanContext(spanContext)
-}
-
-// EncodeSpanContext encode span context to string
-func EncodeSpanContext(spanContext trace.SpanContext) string {
-	rawContextBytes := propagation.Binary(spanContext)
-	encodedSpanContext := base64.StdEncoding.EncodeToString(rawContextBytes)
-	return encodedSpanContext
-}
-
-// DecodeSpanContext encode span context from string
-func DecodeSpanContext(encodedSpanContext string) (trace.SpanContext, error) {
-	rawContextBytes := make([]byte, base64.StdEncoding.DecodedLen(len(encodedSpanContext)))
-	l, err := base64.StdEncoding.Decode(rawContextBytes, []byte(encodedSpanContext))
+// EncodedSpanContext encode span to string
+func EncodedSpanContext(spanContext apitrace.SpanContext) (string, error) {
+	// encode to byte
+	buffer := new(bytes.Buffer)
+	err := binary.Write(buffer, binary.LittleEndian, spanContext)
 	if err != nil {
-		return trace.SpanContext{}, err
+		return "", err
 	}
-	rawContextBytes = rawContextBytes[:l]
-	spanContext, ok := propagation.FromBinary(rawContextBytes)
-	if !ok {
-		return trace.SpanContext{}, fmt.Errorf("has an unsupported version ID or contains no TraceID")
+	// encode to string
+	return base64.StdEncoding.EncodeToString(buffer.Bytes()), nil
+}
+
+// DecodeSpanContext decode encodedSpanContext to spanContext
+func DecodeSpanContext(encodedSpanContext string) (apitrace.SpanContext, error) {
+	// decode to byte
+	byteList := make([]byte, base64.StdEncoding.DecodedLen(len(encodedSpanContext)))
+	l, err := base64.StdEncoding.Decode(byteList, []byte(encodedSpanContext))
+	if err != nil {
+		return apitrace.EmptySpanContext(), err
+	}
+	byteList = byteList[:l]
+	// decode to span context
+	buffer := bytes.NewBuffer(byteList)
+	spanContext := apitrace.SpanContext{}
+	err = binary.Read(buffer, binary.LittleEndian, &spanContext)
+	if err != nil {
+		return apitrace.EmptySpanContext(), err
 	}
 	return spanContext, nil
 }

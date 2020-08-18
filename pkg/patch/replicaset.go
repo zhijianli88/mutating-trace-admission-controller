@@ -9,7 +9,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func mutateReplicaSet(encodedSpanContext string, raw []byte) *v1beta1.AdmissionResponse {
+func mutateReplicaSet(raw []byte, patchAnnotations map[string]string) *v1beta1.AdmissionResponse {
 	var replicaSet appv1.ReplicaSet
 	err := json.Unmarshal(raw, &replicaSet)
 	if err != nil {
@@ -21,7 +21,7 @@ func mutateReplicaSet(encodedSpanContext string, raw []byte) *v1beta1.AdmissionR
 		}
 	}
 
-	patchBytes, err := createPatch(replicaSet.Annotations, encodedSpanContext)
+	patchBytes, err := createPatch(replicaSet.Annotations, patchAnnotations)
 	if err != nil {
 		return &v1beta1.AdmissionResponse{
 			Result: &metav1.Status{

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"mutating-trace-admission-controller/pkg/util/patch"
 	"net/http"
 
 	"github.com/golang/glog"
@@ -15,6 +14,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+
+	"mutating-trace-admission-controller/pkg/patch"
 )
 
 var (

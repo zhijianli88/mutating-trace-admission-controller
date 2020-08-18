@@ -21,8 +21,9 @@ remove:
 
 .PHONY: test
 test:
-	@kubectl apply -f test/yaml/Deployment.yaml
-	@kubectl delete -f test/yaml/Deployment.yaml
+	@kubectl apply -f test/yaml/deployment.yaml
+	@kubectl apply -f test/yaml/deployment_v2.yaml
+	@kubectl delete -f test/yaml/deployment_v2.yaml
 
 clean:
 	@rm -f $(OUTPUT)/*

@@ -5,15 +5,15 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
-	"mutating-trace-admission-controller/pkg/config"
-	"mutating-trace-admission-controller/pkg/server"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/golang/glog"
-	"go.opencensus.io/trace"
+
+	"mutating-trace-admission-controller/pkg/config"
+	"mutating-trace-admission-controller/pkg/server"
 )
 
 func main() {
@@ -36,9 +36,6 @@ func main() {
 		glog.Errorf("configuration validation failed with error: %v", err)
 		return
 	}
-
-	// configure global tracer
-	trace.ApplyConfig(trace.Config{DefaultSampler: trace.ProbabilitySampler(cfg.Trace.SampleRate)})
 
 	// configure certificates
 	pair, err := tls.LoadX509KeyPair("/etc/webhook/certs/cert.pem", "/etc/webhook/certs/key.pem")

@@ -5,13 +5,13 @@ import (
 
 	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
-	appv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func mutateStatefulSet(encodedSpanContext string, raw []byte) *v1beta1.AdmissionResponse {
-	var StatefulSet appv1.StatefulSet
-	err := json.Unmarshal(raw, &StatefulSet)
+func mutatePod(raw []byte, patchAnnotations map[string]string) *v1beta1.AdmissionResponse {
+	var pod corev1.Pod
+	err := json.Unmarshal(raw, &pod)
 	if err != nil {
 		glog.Errorf("Could not unmarshal raw object: %v", err)
 		return &v1beta1.AdmissionResponse{
@@ -21,7 +21,7 @@ func mutateStatefulSet(encodedSpanContext string, raw []byte) *v1beta1.Admission
 		}
 	}
 
-	patchBytes, err := createPatch(StatefulSet.Annotations, encodedSpanContext)
+	patchBytes, err := createPatch(pod.Annotations, patchAnnotations)
 	if err != nil {
 		return &v1beta1.AdmissionResponse{
 			Result: &metav1.Status{
