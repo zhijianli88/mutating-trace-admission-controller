@@ -24,9 +24,9 @@ func TestEncodeSpanContext(t *testing.T) {
 			SpanContext: apitrace.SpanContext{
 				TraceID:    [16]byte{1, 2, 3},
 				SpanID:     [8]byte{4, 5},
-				TraceFlags: 0,
+				TraceFlags: 1,
 			},
-			expected: "AQIDAAAAAAAAAAAAAAAAAAQFAAAAAAAAAA==",
+			expected: "AQIDAAAAAAAAAAAAAAAAAAQFAAAAAAAAAQ==",
 		},
 	}
 

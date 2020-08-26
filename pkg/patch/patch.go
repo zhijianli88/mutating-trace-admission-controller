@@ -32,6 +32,8 @@ func InjectPatch(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta
 
 	fmt.Println("-------------------------------------")
 	fmt.Println(r.Header)
+	fmt.Println(ar.Request.Operation)
+	fmt.Println(ar.Request.Kind.Kind)
 	fmt.Println("-------------------------------------")
 
 	// extract span context from request

@@ -1,6 +1,6 @@
 # Mutating trace admission controller
 
-[Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects base64 encoded [OpenCensus span context](https://github.com/census-instrumentation/opencensus-specs/blob/master/trace/Span.md#spancontext) into the `trace.kubernetes.io/context` object annotation.
+[Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects base64 encoded [span context] into the `trace.kubernetes.io.init` and `trace.kubernetes.io.context` object annotation.
 
 ## Quick start
 

@@ -7,6 +7,7 @@ build:
 	@CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o $(OUTPUT)/webhook cmd/webhook/main.go
 
 docker:
+	@docker rmi -f $(IMAGE)
 	@docker build -f build/Dockerfile -t $(IMAGE) .
 	@docker save -o $(OUTPUT)/$(IMAGE).tar $(IMAGE)
 
