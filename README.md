@@ -16,7 +16,8 @@ The included `Makefile` makes these steps straightforward and the available comm
 * `make docker`: build local Docker image
 * `make install`: apply certificate configuration and deployment configuration to cluster for the mutating webhook
 * `make remove`: delete resources associated with the mutating webhook from the active cluster
-* `make test`: apply and delete a deployment to test webhook
+* `make test-unit`: run unit test
+* `make test-webhook`: apply and delete a deployment to test webhook
 
 There are example patches which can be used with `kustomize` to configure the deployment of this webhook into your cluster under `deploy/base/overlays/example`. This example custom configuration can be applied with:
 

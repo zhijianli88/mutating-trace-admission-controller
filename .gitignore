@@ -1,2 +1,4 @@
 bin
 deploy/base/mutatingwebhook-ca-bundle.yaml
+cover.out
+coverage.html

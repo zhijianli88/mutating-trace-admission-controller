@@ -54,11 +54,11 @@ func TestDecodeSpanContext(t *testing.T) {
 			expected:           apitrace.EmptySpanContext(),
 		},
 		{
-			encodedSpanContext: "AQIDAAAAAAAAAAAAAAAAAAQFAAAAAAAAAA==",
+			encodedSpanContext: "AQIDAAAAAAAAAAAAAAAAAAQFAAAAAAAAAQ==",
 			expected: apitrace.SpanContext{
 				TraceID:    [16]byte{1, 2, 3},
 				SpanID:     [8]byte{4, 5},
-				TraceFlags: 0,
+				TraceFlags: 1,
 			},
 		},
 	}
