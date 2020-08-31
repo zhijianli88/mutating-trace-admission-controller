@@ -21,6 +21,13 @@ func mutateReplicaSet(raw []byte, patchAnnotations map[string]string) *v1beta1.A
 		}
 	}
 
+	// FIXME: use temporary measures to avoid bugs(the infinite loop of replicaset when update deployment)
+	if replicaSet.OwnerReferences != nil {
+		return &v1beta1.AdmissionResponse{
+			Allowed: true,
+		}
+	}
+
 	patchBytes, err := createPatch(replicaSet.Annotations, patchAnnotations)
 	if err != nil {
 		return &v1beta1.AdmissionResponse{
