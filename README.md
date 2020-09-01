@@ -1,26 +1,32 @@
 # Mutating trace admission controller
 
-[Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects base64 encoded [span context] into the `trace.kubernetes.io.init` and `trace.kubernetes.io.context` object annotation.
+[Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects `trace id` and base64 encoded `span context` into the `trace.kubernetes.io.init` and `trace.kubernetes.io.context` object annotation.
 
 ## Quick start
 
-The structure of this mutating admission controller was informed by the [mutating admission webhook found here](https://github.com/morvencao/kube-mutating-webhook-tutorial). The basic idea is as follows:
+### Kubernetes
 
-1) Create an HTTPS-enabled server that takes Pod json from the API server, inserts encoded span context as an annotation, and returns it
-2) Run a deployment with this webhook server, and expose it as a service
-3) Create a `MutatingWebhookConfiguration` which instructs the API server to send Pod objects to the aforementioned service upon creation
+First of all, we need a kubernetes(v1.18.5+) cluster, a single-node cluster will make the next job easier.
+
+Use our `kube-apiserver` and `kube-controller-manger` instead of them in cluster
+1) Clone the source code from [here](https://github.com/Hellcatlk/kubernetes/tree/trace-ot)
+2) Run `KUBE_BUILD_PLATFORMS=linux/amd64 KUBE_BUILD_CONFORMANCE=n KUBE_BUILD_HYPERKUBE=n make release-images`
+3) Run `docker load -i _output/release-images/amd64/kube-apiserver.tar`
+4) Run `docker load -i _output/release-images/amd64/kube-controller-manager.tar`
+5) Edit `/etc/kubernetes/manifests/kube-apiserver.yaml`, use our `kube-apiserver image` instead of old image
+6) Edit `/etc/kubernetes/manifests/kube-controller-manager.yaml`, use our `kube-controller-manager image` instead of old image
+
+### Webhook
 
 The included `Makefile` makes these steps straightforward and the available commands are as follows:
 
-* `make build`: build execute file
-* `make docker`: build local Docker image
-* `make install`: apply certificate configuration and deployment configuration to cluster for the mutating webhook
-* `make remove`: delete resources associated with the mutating webhook from the active cluster
-* `make test-unit`: run unit test
-* `make test-webhook`: apply and delete a deployment to test webhook
-
-There are example patches which can be used with `kustomize` to configure the deployment of this webhook into your cluster under `deploy/base/overlays/example`. This example custom configuration can be applied with:
-
-`kustomize build deploy/overlays/example | kubectl apply -f -`
-
-This can be used, for example, to set different sampling policies between production and staging clusters.
+- `make build`: build execute file
+- `make docker`: build and load Docker image
+- `make install`: apply certificate configuration and deployment configuration to cluster for the mutating webhook
+- `make remove`: delete resources associated with the mutating webhook from the active cluster
+- `make test-unit`: run unit test
+- `make test-webhook`: test webhook, use deployment replicaset and pod
+- `make deployment`: apply and delete a deployment
+- `make replicaset`: apply and delete a replicaset
+- `make pod`: apply and delete a  pod
+- `make clean`: remove file build by script
