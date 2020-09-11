@@ -1,0 +1,20 @@
+notifications:
+  email: false
+
+language: go
+
+go:
+  - "1.14"
+
+sudo: false
+
+services:
+  - docker
+
+install:
+  - go mod download
+
+script:
+  - make unit-test
+  - make build
+  - make docker
