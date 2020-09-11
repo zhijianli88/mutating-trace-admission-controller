@@ -1,6 +1,6 @@
 # Mutating trace admission controller
 
-[![Travis CI](https://travis-ci.com/Hellcatlk/mutating-trace-admission-controller.svg?branch=master)]()
+[![Build Status](https://travis-ci.org/Hellcatlk/mutating-trace-admission-controller.svg?branch=master)](https://travis-ci.org/Hellcatlk/mutating-trace-admission-controller)
 
 [Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects `trace id` and base64 encoded `span context` into the `trace.kubernetes.io.init` and `trace.kubernetes.io.context` object annotation.
 
