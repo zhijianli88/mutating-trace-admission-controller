@@ -50,4 +50,5 @@ pod:
 clean:
 	@rm -f $(OUTPUT)/*
 	@rm -f deploy/base/mutatingwebhook-ca-bundle.yaml
+	@rm -f cover*
 	@docker rmi -f $(IMAGE)
