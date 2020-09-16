@@ -3,7 +3,9 @@ pipeline {
     stages {
         stage('Test') { // Defines the "Test" stage.
             steps {
-                sh 'make test'
+                sh 'make test-unit'
+                sh 'make build'
+                sh 'make docker'
             }
         }
     }
