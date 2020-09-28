@@ -9,7 +9,7 @@ import (
 	apitrace "go.opentelemetry.io/otel/api/trace"
 )
 
-var defaultFormat apitrace.B3
+var defaultFormat apitrace.TraceContext
 
 // SpanContextFromRequestHeader get span context from http request header
 func SpanContextFromRequestHeader(req *http.Request) apitrace.SpanContext {
