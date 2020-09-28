@@ -7,9 +7,10 @@ import (
 	"net/http"
 
 	apitrace "go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/propagators"
 )
 
-var defaultFormat apitrace.TraceContext
+var defaultFormat propagators.TraceContext
 
 // SpanContextFromRequestHeader get span context from http request header
 func SpanContextFromRequestHeader(req *http.Request) apitrace.SpanContext {
