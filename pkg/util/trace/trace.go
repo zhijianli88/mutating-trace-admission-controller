@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/binary"
+	"fmt"
 	"net/http"
+	"reflect"
 
 	apitrace "go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/propagators"
@@ -20,6 +22,9 @@ func SpanContextFromRequestHeader(req *http.Request) apitrace.SpanContext {
 
 // EncodedSpanContext encode span to string
 func EncodedSpanContext(spanContext apitrace.SpanContext) (string, error) {
+	if reflect.DeepEqual(spanContext, apitrace.SpanContext{}) {
+		return "", fmt.Errorf("span context is nil")
+	}
 	// encode to byte
 	buffer := new(bytes.Buffer)
 	err := binary.Write(buffer, binary.LittleEndian, spanContext)

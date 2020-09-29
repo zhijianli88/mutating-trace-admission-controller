@@ -41,7 +41,7 @@ func InjectPatch(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta
 	spanContext := trace.SpanContextFromRequestHeader(r)
 
 	// only when CREATE we need add initTraceID
-	if ar.Request.Operation == "CREATE" {
+	if ar.Request.Operation == v1beta1.Create {
 		// get initTraceID from request header
 		if len(r.Header[initTraceIDHeaderKey]) != 0 {
 			initTraceID = r.Header[initTraceIDHeaderKey][0]
@@ -52,7 +52,7 @@ func InjectPatch(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta
 
 	// build the annotations to patch
 	patchAnnotations, err := buildPatchAnnotations(initTraceID, spanContext)
-	if err != nil {
+	if len(patchAnnotations) == 0 || err != nil {
 		return &v1beta1.AdmissionResponse{
 			Allowed: true,
 		}
