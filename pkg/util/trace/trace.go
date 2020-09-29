@@ -12,11 +12,11 @@ import (
 	"go.opentelemetry.io/otel/propagators"
 )
 
-var defaultFormat propagators.TraceContext
+var propagator propagators.TraceContext
 
 // SpanContextFromRequestHeader get span context from http request header
 func SpanContextFromRequestHeader(req *http.Request) apitrace.SpanContext {
-	ctx := defaultFormat.Extract(req.Context(), req.Header)
+	ctx := propagator.Extract(req.Context(), req.Header)
 	return apitrace.RemoteSpanContextFromContext(ctx)
 }
 
