@@ -1,21 +1,20 @@
-
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: test-deployment
-  labels:
-    app: test
+  name: test-deamonset
 spec:
-  replicas: 4
   selector:
     matchLabels:
-      app: test
+      name: test
   template:
     metadata:
       labels:
-        app: test
+        name: test
     spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
       containers:
       - name: test-container
-        image: nginx:1.10.4
+        image: nginx:1.10.3
         imagePullPolicy: IfNotPresent

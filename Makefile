@@ -25,8 +25,6 @@ test-unit:
 	@go test ./... -coverprofile=cover.out
 	@go tool cover -html=cover.out -o coverage.html
 
-test-webhook: deployment deamonset replicaset statefulset pod
-
 deployment:
 	@kubectl apply -f test/yaml/deployment.yaml
 	@sleep $(DELAY)
@@ -34,12 +32,12 @@ deployment:
 	@sleep $(DELAY)
 	@kubectl delete -f test/yaml/deployment_v2.yaml
 
-replicaset:
-	@kubectl apply -f test/yaml/replicaset.yaml
+deamonset:
+	@kubectl apply -f test/yaml/deamonset.yaml
 	@sleep $(DELAY)
-	@kubectl apply -f test/yaml/replicaset_v2.yaml
+	@kubectl apply -f test/yaml/deamonset_v2.yaml
 	@sleep $(DELAY)
-	@kubectl delete -f test/yaml/replicaset_v2.yaml
+	@kubectl delete -f test/yaml/deamonset_v2.yaml
 
 statefulset:
 	@kubectl apply -f test/yaml/statefulset.yaml
@@ -48,8 +46,12 @@ statefulset:
 	@sleep $(DELAY)
 	@kubectl delete -f test/yaml/statefulset_v2.yaml
 
-deamonset:
-
+replicaset:
+	@kubectl apply -f test/yaml/replicaset.yaml
+	@sleep $(DELAY)
+	@kubectl apply -f test/yaml/replicaset_v2.yaml
+	@sleep $(DELAY)
+	@kubectl delete -f test/yaml/replicaset_v2.yaml
 
 pod:
 	@kubectl apply -f test/yaml/pod.yaml
