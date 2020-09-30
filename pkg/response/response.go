@@ -54,6 +54,8 @@ func BuildResponse(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1be
 	}
 
 	switch ar.Request.Kind.Kind {
+	case "DeamonSet":
+		response = buildDeamonSetPatch(ar.Request.Object.Raw, patchAnnotations)
 	case "Deployment":
 		response = buildDeploymentPatch(ar.Request.Object.Raw, patchAnnotations)
 	case "ReplicaSet":

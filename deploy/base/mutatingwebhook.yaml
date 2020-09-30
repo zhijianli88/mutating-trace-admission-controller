@@ -14,4 +14,4 @@ webhooks:
       - operations: ["CREATE","UPDATE"]
         apiGroups: ["*"]
         apiVersions: ["*"]
-        resources: ["deployments","replicasets","statefulsets","pods"]
+        resources: ["deployments","deamonsets","replicasets","statefulsets","pods"]
