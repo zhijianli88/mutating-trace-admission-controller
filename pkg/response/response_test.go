@@ -1,4 +1,4 @@
-package patch
+package response
 
 import (
 	"reflect"
@@ -7,7 +7,7 @@ import (
 	apitrace "go.opentelemetry.io/otel/api/trace"
 )
 
-func TestBuildPatchAnnotations(t *testing.T) {
+func TestBuildAnnotations(t *testing.T) {
 	cases := []struct {
 		name          string
 		initTraceID   string
@@ -52,7 +52,7 @@ func TestBuildPatchAnnotations(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			got, err := buildPatchAnnotations(c.initTraceID, c.spanContext)
+			got, err := buildAnnotations(c.initTraceID, c.spanContext)
 			if (err != nil) != c.expectedError {
 				t.Errorf("got unexpected error: %v", err)
 			}

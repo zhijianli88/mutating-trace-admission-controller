@@ -1,17 +1,18 @@
-package patch
+package response
 
 import (
 	"encoding/json"
+	"mutating-trace-admission-controller/pkg/util/patch"
 
 	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
-	corev1 "k8s.io/api/core/v1"
+	appv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func mutatePod(raw []byte, patchAnnotations map[string]string) *v1beta1.AdmissionResponse {
-	var pod corev1.Pod
-	err := json.Unmarshal(raw, &pod)
+func buildDeploymentPatch(raw []byte, patchAnnotations map[string]string) *v1beta1.AdmissionResponse {
+	var deployment appv1.Deployment
+	err := json.Unmarshal(raw, &deployment)
 	if err != nil {
 		glog.Errorf("Could not unmarshal raw object: %v", err)
 		return &v1beta1.AdmissionResponse{
@@ -21,7 +22,7 @@ func mutatePod(raw []byte, patchAnnotations map[string]string) *v1beta1.Admissio
 		}
 	}
 
-	patchBytes, err := createPatch(pod.Annotations, patchAnnotations)
+	patchBytes, err := patch.EncodePatch(patch.BuildAnnotationsPatch(deployment.Annotations, patchAnnotations))
 	if err != nil {
 		return &v1beta1.AdmissionResponse{
 			Result: &metav1.Status{

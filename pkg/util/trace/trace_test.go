@@ -9,18 +9,13 @@ import (
 
 func TestEncodeSpanContext(t *testing.T) {
 	cases := []struct {
-		name        string
-		SpanContext apitrace.SpanContext
-		expected    string
+		name          string
+		SpanContext   apitrace.SpanContext
+		expected      string
+		expectedError bool
 	}{
-
 		{
-			name:        "empty span",
-			SpanContext: apitrace.EmptySpanContext(),
-			expected:    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-		},
-		{
-			name: "span",
+			name: "normal",
 			SpanContext: apitrace.SpanContext{
 				TraceID:    [16]byte{1, 2, 3},
 				SpanID:     [8]byte{4, 5},
@@ -28,12 +23,17 @@ func TestEncodeSpanContext(t *testing.T) {
 			},
 			expected: "AQIDAAAAAAAAAAAAAAAAAAQFAAAAAAAAAQ==",
 		},
+		{
+			name:          "empty",
+			SpanContext:   apitrace.EmptySpanContext(),
+			expectedError: true,
+		},
 	}
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			got, err := EncodedSpanContext(c.SpanContext)
-			if err != nil {
+			if (err != nil) != c.expectedError {
 				t.Errorf("got unexpected error: %+v", err)
 			}
 			if !reflect.DeepEqual(c.expected, got) {

@@ -1,7 +1,8 @@
-package patch
+package response
 
 import (
 	"encoding/json"
+	"mutating-trace-admission-controller/pkg/util/patch"
 
 	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
@@ -9,9 +10,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func mutateStatefulSet(raw []byte, patchAnnotations map[string]string) *v1beta1.AdmissionResponse {
-	var StatefulSet appv1.StatefulSet
-	err := json.Unmarshal(raw, &StatefulSet)
+func buildStatefulSetPatch(raw []byte, patchAnnotations map[string]string) *v1beta1.AdmissionResponse {
+	var statefulSet appv1.StatefulSet
+	err := json.Unmarshal(raw, &statefulSet)
 	if err != nil {
 		glog.Errorf("Could not unmarshal raw object: %v", err)
 		return &v1beta1.AdmissionResponse{
@@ -21,7 +22,7 @@ func mutateStatefulSet(raw []byte, patchAnnotations map[string]string) *v1beta1.
 		}
 	}
 
-	patchBytes, err := createPatch(StatefulSet.Annotations, patchAnnotations)
+	patchBytes, err := patch.EncodePatch(patch.BuildAnnotationsPatch(statefulSet.Annotations, patchAnnotations))
 	if err != nil {
 		return &v1beta1.AdmissionResponse{
 			Result: &metav1.Status{

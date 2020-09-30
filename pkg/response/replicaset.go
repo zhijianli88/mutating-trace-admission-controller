@@ -1,7 +1,8 @@
-package patch
+package response
 
 import (
 	"encoding/json"
+	"mutating-trace-admission-controller/pkg/util/patch"
 
 	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
@@ -9,9 +10,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func mutateDeployment(raw []byte, patchAnnotations map[string]string) *v1beta1.AdmissionResponse {
-	var deployment appv1.Deployment
-	err := json.Unmarshal(raw, &deployment)
+func buildReplicaSetPatch(raw []byte, patchAnnotations map[string]string) *v1beta1.AdmissionResponse {
+	var replicaSet appv1.ReplicaSet
+	err := json.Unmarshal(raw, &replicaSet)
 	if err != nil {
 		glog.Errorf("Could not unmarshal raw object: %v", err)
 		return &v1beta1.AdmissionResponse{
@@ -21,7 +22,14 @@ func mutateDeployment(raw []byte, patchAnnotations map[string]string) *v1beta1.A
 		}
 	}
 
-	patchBytes, err := createPatch(deployment.Annotations, patchAnnotations)
+	// FIXME: use temporary measures to avoid bugs(the infinite loop of replicaset when update deployment)
+	if replicaSet.OwnerReferences != nil {
+		return &v1beta1.AdmissionResponse{
+			Allowed: true,
+		}
+	}
+
+	patchBytes, err := patch.EncodePatch(patch.BuildAnnotationsPatch(replicaSet.Annotations, patchAnnotations))
 	if err != nil {
 		return &v1beta1.AdmissionResponse{
 			Result: &metav1.Status{
