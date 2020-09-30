@@ -1,14 +1,10 @@
-# Mutating trace admission controller
+# Mutating Trace Admission Controller
+
+---
 
 [Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects `init trace id` and base64 encoded `span context` into the `trace.kubernetes.io.init` and `trace.kubernetes.io.context` object annotation.
 
-Currently, we support the following objects:
-
-- [x] Deployment
-- [ ] DeamonSet
-- [x] StatefulSet
-- [x] ReplicaSet
-- [x] Pod
+---
 
 ## Quick start
 
@@ -39,3 +35,13 @@ The included `Makefile` makes these steps straightforward and the available comm
 - `make replicaset`: apply and delete a replicaset.
 - `make pod`: apply and delete a  pod.
 - `make clean`: remove files build by script.
+
+## WorkLoad Support
+
+Currently, we support the following objects:
+
+- [x] Deployment
+- [ ] DeamonSet
+- [x] StatefulSet
+- [x] ReplicaSet
+- [x] Pod
