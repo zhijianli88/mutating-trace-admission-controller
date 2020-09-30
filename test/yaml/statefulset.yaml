@@ -1,15 +1,12 @@
-
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: StatefulSet
 metadata:
-  name: test-replicaset
-  labels:
-    app: test
+  name: test-statefulset
 spec:
-  replicas: 3
   selector:
     matchLabels:
       app: test
+  replicas: 3
   template:
     metadata:
       labels:

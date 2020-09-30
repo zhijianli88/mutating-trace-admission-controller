@@ -1,5 +1,6 @@
 IMAGE=trace-context-injector:v1
 OUTPUT=bin
+DELAY=1
 
 .PHONY: build
 build:
@@ -24,27 +25,37 @@ test-unit:
 	@go test ./... -coverprofile=cover.out
 	@go tool cover -html=cover.out -o coverage.html
 
-test-webhook: deployment replicaset pod
+test-webhook: deployment deamonset replicaset statefulset pod
 
 deployment:
 	@kubectl apply -f test/yaml/deployment.yaml
-	@sleep 1
+	@sleep $(DELAY)
 	@kubectl apply -f test/yaml/deployment_v2.yaml
-	@sleep 1
+	@sleep $(DELAY)
 	@kubectl delete -f test/yaml/deployment_v2.yaml
 
 replicaset:
 	@kubectl apply -f test/yaml/replicaset.yaml
-	@sleep 1
+	@sleep $(DELAY)
 	@kubectl apply -f test/yaml/replicaset_v2.yaml
-	@sleep 1
+	@sleep $(DELAY)
 	@kubectl delete -f test/yaml/replicaset_v2.yaml
+
+statefulset:
+	@kubectl apply -f test/yaml/statefulset.yaml
+	@sleep $(DELAY)
+	@kubectl apply -f test/yaml/statefulset_v2.yaml
+	@sleep $(DELAY)
+	@kubectl delete -f test/yaml/statefulset_v2.yaml
+
+deamonset:
+
 
 pod:
 	@kubectl apply -f test/yaml/pod.yaml
-	@sleep 1
+	@sleep $(DELAY)
 	@kubectl apply -f test/yaml/pod_v2.yaml
-	@sleep 1
+	@sleep $(DELAY)
 	@kubectl delete -f test/yaml/pod_v2.yaml
 
 clean:

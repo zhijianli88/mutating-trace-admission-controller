@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: test-rs
+  name: test-replicaset
   labels:
     app: test
 spec:
@@ -18,4 +18,4 @@ spec:
       containers:
       - name: test-container
         image: nginx:1.10.3
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent

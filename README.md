@@ -2,6 +2,14 @@
 
 [Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects `init trace id` and base64 encoded `span context` into the `trace.kubernetes.io.init` and `trace.kubernetes.io.context` object annotation.
 
+Currently, we support the following objects:
+
+- [x] Deployment
+- [ ] DeamonSet
+- [x] StatefulSet
+- [x] ReplicaSet
+- [x] Pod
+
 ## Quick start
 
 ### Kubernetes

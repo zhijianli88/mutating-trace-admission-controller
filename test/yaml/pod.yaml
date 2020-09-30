@@ -9,4 +9,4 @@ spec:
   containers:
   - name: test-container
     image: nginx:1.10.3
-    imagePullPolicy: Always
+    imagePullPolicy: IfNotPresent
