@@ -4,5 +4,8 @@ metadata:
   name: trace-context-injector-webhook-config-map
 data:
   config.yaml: |
+    certificate:
+      certPath: /etc/webhook/certs/cert.pem
+      keyPath: /etc/webhook/certs/key.pem
     trace:
       sampleRate: 1.0

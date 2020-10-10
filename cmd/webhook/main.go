@@ -4,68 +4,56 @@ import (
 	"context"
 	"crypto/tls"
 	"flag"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/golang/glog"
-
 	"mutating-trace-admission-controller/pkg/config"
 	"mutating-trace-admission-controller/pkg/server"
+
+	"github.com/golang/glog"
 )
 
 func main() {
 	// read configuration location from command line arg
 	var configPath string
-	flag.StringVar(&configPath, "configPath", config.DefaultConfigPath, "Path that points to the YAML configuration for this webhook.")
+	flag.StringVar(&configPath, "configPath", "", "Path that points to the YAML configuration for this webhook.")
 	flag.Parse()
-
-	// parse and validate configuration
-	cfg := config.Config{}
-
-	ok, err := config.ParseConfigFromPath(&cfg, configPath)
-	if !ok {
-		glog.Errorf("configuration parse failed with error: %v", err)
-		return
-	}
-
-	ok, err = cfg.Validate()
-	if !ok {
-		glog.Errorf("configuration validation failed with error: %v", err)
-		return
-	}
-
-	// configure certificates
-	pair, err := tls.LoadX509KeyPair("/etc/webhook/certs/cert.pem", "/etc/webhook/certs/key.pem")
+	// parse configuration
+	cfg, err := config.ParseConfig(configPath)
 	if err != nil {
-		glog.Errorf("Failed to load key pair: %v", err)
+		glog.Errorf("parse configuration failed: %v", err)
+		return
 	}
-
+	// load certificates
+	pair, err := cfg.LoadX509KeyPair()
+	if err != nil {
+		glog.Errorf("load X509 key pair failed: %v", err)
+		return
+	}
+	// config webhook server
 	whsvr := &server.WebhookServer{
 		Server: &http.Server{
-			Addr:      fmt.Sprintf(":%v", 443),
+			Addr:      ":443",
 			TLSConfig: &tls.Config{Certificates: []tls.Certificate{pair}},
 		},
 	}
-
 	mux := http.NewServeMux()
 	mux.HandleFunc("/mutate", whsvr.Serve)
 	whsvr.Server.Handler = mux
-
 	// begin webhook server
 	go func() {
-		if err := whsvr.Server.ListenAndServeTLS("", ""); err != nil {
-			glog.Fatalf("Failed to listen and serve webhook server: %v", err)
+		err := whsvr.Server.ListenAndServeTLS("", "")
+		if err != nil {
+			glog.Errorf("listen and serve webhook server failed: %v", err)
+			return
 		}
 	}()
-
 	// listening OS shutdown singal
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 	<-signalChan
-
-	glog.Errorf("Got OS shutdown signal, shutting down webhook server gracefully...")
+	// shutdown webhook server
 	whsvr.Server.Shutdown(context.Background())
 }
