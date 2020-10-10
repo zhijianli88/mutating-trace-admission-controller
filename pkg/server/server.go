@@ -8,6 +8,7 @@ import (
 
 	"mutating-trace-admission-controller/pkg/response"
 
+	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
 	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	v1 "k8s.io/api/apps/v1"
@@ -43,8 +44,9 @@ func (whsvr *WebhookServer) Serve(w http.ResponseWriter, r *http.Request) {
 
 	// read request body
 	body, err := ioutil.ReadAll(r.Body)
-	if err != nil || len(body) == 0 {
-		http.Error(w, "empty body", http.StatusBadRequest)
+	if err != nil {
+		glog.Errorf("read request body failed: %v", err)
+		http.Error(w, "could not read request body", http.StatusBadRequest)
 		return
 	}
 
@@ -52,7 +54,8 @@ func (whsvr *WebhookServer) Serve(w http.ResponseWriter, r *http.Request) {
 	ar := v1beta1.AdmissionReview{}
 	_, _, err = deserializer.Decode(body, nil, &ar)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("could not encode response: %v", err), http.StatusBadRequest)
+		glog.Errorf("decode request body failed: %v", err)
+		http.Error(w, fmt.Sprintf("could not decode response: %v", err), http.StatusBadRequest)
 		return
 	}
 
@@ -63,6 +66,7 @@ func (whsvr *WebhookServer) Serve(w http.ResponseWriter, r *http.Request) {
 	// marshal respson
 	resp, err := json.Marshal(admissionReview)
 	if err != nil {
+		glog.Errorf("marshal respson failed: %v", err)
 		http.Error(w, fmt.Sprintf("could not encode response: %v", err), http.StatusInternalServerError)
 		return
 	}
@@ -70,6 +74,7 @@ func (whsvr *WebhookServer) Serve(w http.ResponseWriter, r *http.Request) {
 	// write respson
 	_, err = w.Write(resp)
 	if err != nil {
+		glog.Errorf("write respson failed: %v", err)
 		http.Error(w, fmt.Sprintf("could not write response: %v", err), http.StatusInternalServerError)
 	}
 

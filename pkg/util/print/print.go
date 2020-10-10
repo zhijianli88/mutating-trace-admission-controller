@@ -12,5 +12,5 @@ func Request(r *http.Request) {
 	if err != nil {
 		fmt.Println("Request Error: ", err)
 	}
-	fmt.Printf("\x1b[31m%s\x1b[0m\n", string(requestDump))
+	fmt.Println(string(requestDump))
 }

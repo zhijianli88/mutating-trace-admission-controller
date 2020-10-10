@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"mutating-trace-admission-controller/pkg/util/patch"
 
+	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
 	appv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -13,6 +14,7 @@ func buildDeploymentPatch(raw []byte, patchAnnotations map[string]string) *v1bet
 	var deployment appv1.Deployment
 	err := json.Unmarshal(raw, &deployment)
 	if err != nil {
+		glog.Errorf("unmarshal deployment raw failed: %v", err)
 		return &v1beta1.AdmissionResponse{
 			Result: &metav1.Status{
 				Message: err.Error(),
@@ -22,6 +24,7 @@ func buildDeploymentPatch(raw []byte, patchAnnotations map[string]string) *v1bet
 
 	patchBytes, err := patch.EncodePatch(patch.BuildAnnotationsPatch(deployment.Annotations, patchAnnotations))
 	if err != nil {
+		glog.Errorf("encode deployment patch failed: %v", err)
 		return &v1beta1.AdmissionResponse{
 			Result: &metav1.Status{
 				Message: err.Error(),

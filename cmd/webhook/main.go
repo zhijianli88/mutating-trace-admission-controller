@@ -20,18 +20,21 @@ func main() {
 	var configPath string
 	flag.StringVar(&configPath, "configPath", "", "Path that points to the YAML configuration for this webhook.")
 	flag.Parse()
+
 	// parse configuration
 	cfg, err := config.ParseConfig(configPath)
 	if err != nil {
 		glog.Errorf("parse configuration failed: %v", err)
 		return
 	}
+
 	// load certificates
 	pair, err := cfg.LoadX509KeyPair()
 	if err != nil {
 		glog.Errorf("load X509 key pair failed: %v", err)
 		return
 	}
+
 	// config webhook server
 	whsvr := &server.WebhookServer{
 		Server: &http.Server{
@@ -42,6 +45,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/mutate", whsvr.Serve)
 	whsvr.Server.Handler = mux
+
 	// begin webhook server
 	go func() {
 		err := whsvr.Server.ListenAndServeTLS("", "")
@@ -50,10 +54,12 @@ func main() {
 			return
 		}
 	}()
+
 	// listening OS shutdown singal
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 	<-signalChan
+
 	// shutdown webhook server
 	whsvr.Server.Shutdown(context.Background())
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/golang/glog"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -34,6 +35,7 @@ type Trace struct {
 // use default config path("/etc/webhook/config/config.yaml").
 func ParseConfig(path string) (Config, error) {
 	if path == "" {
+		glog.Warningf("config path is empty, use default:: %v", defaultConfigPath)
 		path = defaultConfigPath
 	}
 	// read config file
@@ -52,9 +54,11 @@ func ParseConfig(path string) (Config, error) {
 		return Config{}, errors.New("sampling rate must be between 0 and 1 inclusive")
 	}
 	if config.Certificate.CertPath == "" {
+		glog.Warningf("cert path is empty, use default: %v", defaultCertPath)
 		config.Certificate.CertPath = defaultCertPath
 	}
 	if config.Certificate.KeyPath == "" {
+		glog.Warningf("key path is empty, use default: %v", defaultKeyPath)
 		config.Certificate.KeyPath = defaultKeyPath
 	}
 	return config, nil
