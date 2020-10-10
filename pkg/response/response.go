@@ -12,13 +12,11 @@ import (
 	apitrace "go.opentelemetry.io/otel/api/trace"
 )
 
-const initTraceIDHeaderKey string = "Init-Traceid"
+// avoid use char `/` in string
+const initialTraceIDAnnotationKey string = "trace.kubernetes.io.initial"
 
 // avoid use char `/` in string
-const initTraceIDAnnotationKey string = "trace.kubernetes.io.init"
-
-// avoid use char `/` in string
-const traceAnnotationKey string = "trace.kubernetes.io.context"
+const spanContextAnnotationKey string = "trace.kubernetes.io.span.context"
 
 // BuildResponse build the response to inject the trace context into received object
 func BuildResponse(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta1.AdmissionResponse) {
@@ -31,21 +29,20 @@ func BuildResponse(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1be
 	fmt.Println("-------------------------------------")
 
 	// extract span context from request
-	var initTraceID string = ""
+	var initialTraceID string = ""
 	spanContext := trace.SpanContextFromRequestHeader(r)
 
 	// only when CREATE we need add initTraceID
 	if ar.Request.Operation == v1beta1.Create {
 		// get initTraceID from request header
-		if len(r.Header[initTraceIDHeaderKey]) != 0 {
-			initTraceID = r.Header[initTraceIDHeaderKey][0]
-		} else {
-			initTraceID = spanContext.TraceID.String()
+		initialTraceID = trace.InitialTraceIDFromRequestHeader(r)
+		if initialTraceID == "" {
+			initialTraceID = spanContext.TraceID.String()
 		}
 	}
 
 	// build the annotations to patch
-	patchAnnotations, err := buildAnnotations(initTraceID, spanContext)
+	patchAnnotations, err := buildAnnotations(initialTraceID, spanContext)
 	if len(patchAnnotations) == 0 || err != nil {
 		return &v1beta1.AdmissionResponse{
 			UID:     ar.Request.UID,
@@ -82,11 +79,11 @@ func buildAnnotations(initTraceID string, spanContext apitrace.SpanContext) (map
 	}
 	if initTraceID == "" {
 		return map[string]string{
-			traceAnnotationKey: encodedSpanContext,
+			spanContextAnnotationKey: encodedSpanContext,
 		}, nil
 	}
 	return map[string]string{
-		initTraceIDAnnotationKey: initTraceID,
-		traceAnnotationKey:       encodedSpanContext,
+		initialTraceIDAnnotationKey: initTraceID,
+		spanContextAnnotationKey:    encodedSpanContext,
 	}, nil
 }

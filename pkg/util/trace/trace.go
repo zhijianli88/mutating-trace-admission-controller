@@ -8,15 +8,26 @@ import (
 	"net/http"
 	"reflect"
 
+	"go.opentelemetry.io/otel"
 	apitrace "go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/propagators"
 )
 
-var propagator propagators.TraceContext
+var tracePropagator propagators.TraceContext
+var baggagePropagator propagators.Baggage
+
+const initialTraceIDBaggageKey label.Key = "Initial-Trace-Id"
+
+// InitialTraceIDFromRequestHeader get initial trace id from http request header
+func InitialTraceIDFromRequestHeader(req *http.Request) string {
+	ctx := baggagePropagator.Extract(req.Context(), req.Header)
+	return otel.BaggageValue(ctx, initialTraceIDBaggageKey).AsString()
+}
 
 // SpanContextFromRequestHeader get span context from http request header
 func SpanContextFromRequestHeader(req *http.Request) apitrace.SpanContext {
-	ctx := propagator.Extract(req.Context(), req.Header)
+	ctx := tracePropagator.Extract(req.Context(), req.Header)
 	return apitrace.RemoteSpanContextFromContext(ctx)
 }
 
