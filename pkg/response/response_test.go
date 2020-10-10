@@ -24,8 +24,8 @@ func TestBuildAnnotations(t *testing.T) {
 				TraceFlags: 1,
 			},
 			expected: map[string]string{
-				"trace.kubernetes.io.init":    "1234",
-				"trace.kubernetes.io.context": "AQIDAAAAAAAAAAAAAAAAAAQFAAAAAAAAAQ==",
+				initialTraceIDAnnotationKey: "1234",
+				spanContextAnnotationKey:    "AQIDAAAAAAAAAAAAAAAAAAQFAAAAAAAAAQ==",
 			},
 		},
 		{
@@ -41,7 +41,7 @@ func TestBuildAnnotations(t *testing.T) {
 				TraceFlags: 1,
 			},
 			expected: map[string]string{
-				"trace.kubernetes.io.context": "AQIDAAAAAAAAAAAAAAAAAAQFAAAAAAAAAQ==",
+				spanContextAnnotationKey: "AQIDAAAAAAAAAAAAAAAAAAQFAAAAAAAAAQ==",
 			},
 		},
 		{

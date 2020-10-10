@@ -2,7 +2,7 @@
 
 ---
 
-[Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects `init trace id` and base64 encoded `span context` into the `trace.kubernetes.io.init` and `trace.kubernetes.io.context` object annotation.
+[Mutating admission controller](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) that injects `initial trace id` and base64 encoded `span context` into the `trace.kubernetes.io.initial` and `trace.kubernetes.io.span.context` object annotation.
 
 ---
 
@@ -30,11 +30,15 @@ The included `Makefile` makes these steps straightforward and the available comm
 - `make install`: apply certificate configuration and deployment configuration to cluster for the mutating webhook.
 - `make remove`: delete resources associated with the mutating webhook from the active cluster.
 - `make test-unit`: run unit test.
-- `make test-webhook`: test webhook, use deployment replicaset and pod.
+- `make test-webhook`: test webhook, use deployment deamonset statefulset replicaset and pod.
 - `make deployment`: apply and delete a deployment.
+- `make deamonset`: apply and delete a deamonset.
+- `make statefulset`: apply and delete a statefulset.
 - `make replicaset`: apply and delete a replicaset.
 - `make pod`: apply and delete a  pod.
 - `make clean`: remove files build by script.
+
+We can check the webhook's log to get the result of trace.
 
 ## WorkLoad Support
 
