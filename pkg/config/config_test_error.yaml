@@ -1,0 +1,5 @@
+certificate:
+  certPath: ""
+  keyPath: ""
+trace:
+  sampleRate: "1.0"

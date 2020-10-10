@@ -1,0 +1,5 @@
+certificate:
+  certPath: "/home/certs/cert.pem"
+  keyPath: "/home/certs/key.pem"
+trace:
+  sampleRate: 1.0
