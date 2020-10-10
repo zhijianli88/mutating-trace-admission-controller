@@ -38,7 +38,7 @@ The included `Makefile` makes these steps straightforward and the available comm
 - `make pod`: apply and delete a  pod.
 - `make clean`: remove files build by script.
 
-We can check the webhook's log to get the result of trace.
+We can check the logs of webhook to get the result of trace.
 
 ## WorkLoad Support
 
