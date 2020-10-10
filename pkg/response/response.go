@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
 
 	"mutating-trace-admission-controller/pkg/util/trace"
@@ -20,8 +19,6 @@ const spanContextAnnotationKey string = "trace.kubernetes.io.span.context"
 
 // BuildResponse build the response to inject the trace context into received object
 func BuildResponse(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta1.AdmissionResponse) {
-	glog.V(3).Infof("AdmissionReview for Kind=%v, Namespace=%v Name=%v UID=%v patchOperation=%v UserInfo=%v", ar.Request.Kind, ar.Request.Namespace, ar.Request.Name, ar.Request.UID, ar.Request.Operation, ar.Request.UserInfo)
-
 	fmt.Println("-------------------------------------")
 	fmt.Println(r.Header)
 	fmt.Println(ar.Request.Operation)
@@ -37,7 +34,7 @@ func BuildResponse(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1be
 		// get initTraceID from request header
 		initialTraceID = trace.InitialTraceIDFromRequestHeader(r)
 		if initialTraceID == "" {
-			initialTraceID = spanContext.TraceID.String()
+			initialTraceID = string(ar.Request.UID)
 		}
 	}
 
