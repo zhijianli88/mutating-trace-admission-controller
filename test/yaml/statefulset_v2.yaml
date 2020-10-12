@@ -14,5 +14,5 @@ spec:
     spec:
       containers:
       - name: test-container
-        image: nginx:1.10.4
+        image: nginx:1.11.0
         imagePullPolicy: IfNotPresent
