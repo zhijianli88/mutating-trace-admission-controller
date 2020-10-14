@@ -34,6 +34,7 @@ func BuildResponse(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1be
 		// get initTraceID from request header
 		initialTraceID = trace.InitialTraceIDFromRequestHeader(r)
 		if initialTraceID == "" {
+			// FIXME: Use request uid for initial trace id
 			initialTraceID = string(ar.Request.UID)
 		}
 	}
