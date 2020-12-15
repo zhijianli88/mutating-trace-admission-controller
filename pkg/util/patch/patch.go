@@ -20,13 +20,13 @@ func BuildAnnotationsPatch(old, new map[string]string) (patch []PatchOperation) 
 	)
 
 	for key, value := range new {
-		if old == nil {
-			patchAdd.Value.(map[string]string)[key] = value
-		} else if old[key] == "" {
+		if old == nil || old[key] == "" {
 			patch = append(patch, PatchOperation{
-				Op:    "add",
-				Path:  "/metadata/annotations/" + key,
-				Value: value,
+				Op:   "add",
+				Path: "/metadata/annotations/",
+				Value: map[string]string{
+					key: value,
+				},
 			})
 		} else if old[key] != value {
 			patch = append(patch, PatchOperation{

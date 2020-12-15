@@ -15,15 +15,6 @@ import (
 )
 
 var tracePropagator propagators.TraceContext
-var baggagePropagator propagators.Baggage
-
-const initialTraceIDBaggageKey label.Key = "Initial-Trace-Id"
-
-// InitialTraceIDFromRequestHeader get initial trace id from http request header
-func InitialTraceIDFromRequestHeader(req *http.Request) string {
-	ctx := baggagePropagator.Extract(req.Context(), req.Header)
-	return otel.BaggageValue(ctx, initialTraceIDBaggageKey).AsString()
-}
 
 // SpanContextFromRequestHeader get span context from http request header
 func SpanContextFromRequestHeader(req *http.Request) apitrace.SpanContext {
@@ -31,7 +22,7 @@ func SpanContextFromRequestHeader(req *http.Request) apitrace.SpanContext {
 	return apitrace.RemoteSpanContextFromContext(ctx)
 }
 
-// EncodedSpanContext encode span to string
+// EncodedSpanContext encode spanContext to string
 func EncodedSpanContext(spanContext apitrace.SpanContext) (string, error) {
 	if reflect.DeepEqual(spanContext, apitrace.SpanContext{}) {
 		return "", fmt.Errorf("span context is nil")

@@ -12,10 +12,10 @@ import (
 )
 
 // avoid use char `/` in string
-const initialTraceIDAnnotationKey string = "trace.kubernetes.io.initial"
+const initialTraceIDAnnotationKey string = "trace.kubernetes.io/initial"
 
 // avoid use char `/` in string
-const spanContextAnnotationKey string = "trace.kubernetes.io.span.context"
+const spanContextAnnotationKey string = "trace.kubernetes.io/context"
 
 // BuildResponse build the response to inject the trace context into received object
 func BuildResponse(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1beta1.AdmissionResponse) {
