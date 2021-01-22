@@ -12,9 +12,6 @@ import (
 )
 
 // avoid use char `/` in string
-const initialTraceIDAnnotationKey string = "trace.kubernetes.io/initial"
-
-// avoid use char `/` in string
 const spanContextAnnotationKey string = "trace.kubernetes.io/context"
 
 // BuildResponse build the response to inject the trace context into received object
@@ -26,21 +23,10 @@ func BuildResponse(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1be
 	fmt.Println("-------------------------------------")
 
 	// extract span context from request
-	var initialTraceID string = ""
 	spanContext := trace.SpanContextFromRequestHeader(r)
 
-	// only when CREATE we need add initTraceID
-	if ar.Request.Operation == v1beta1.Create {
-		// get initTraceID from request header
-		initialTraceID = trace.InitialTraceIDFromRequestHeader(r)
-		if initialTraceID == "" {
-			// FIXME: Use request uid for initial trace id
-			initialTraceID = string(ar.Request.UID)
-		}
-	}
-
 	// build the annotations to patch
-	patchAnnotations, err := buildAnnotations(initialTraceID, spanContext)
+	patchAnnotations, err := buildAnnotations(spanContext)
 	if len(patchAnnotations) == 0 || err != nil {
 		return &v1beta1.AdmissionResponse{
 			UID:     ar.Request.UID,
@@ -70,18 +56,12 @@ func BuildResponse(r *http.Request, ar *v1beta1.AdmissionReview) (response *v1be
 }
 
 // buildAnnotations create a annotation with initTraceID and span
-func buildAnnotations(initTraceID string, spanContext apitrace.SpanContext) (map[string]string, error) {
+func buildAnnotations(spanContext apitrace.SpanContext) (map[string]string, error) {
 	encodedSpanContext, err := trace.EncodedSpanContext(spanContext)
 	if err != nil {
 		return nil, err
 	}
-	if initTraceID == "" {
-		return map[string]string{
-			spanContextAnnotationKey: encodedSpanContext,
-		}, nil
-	}
 	return map[string]string{
-		initialTraceIDAnnotationKey: initTraceID,
-		spanContextAnnotationKey:    encodedSpanContext,
+		spanContextAnnotationKey: encodedSpanContext,
 	}, nil
 }
