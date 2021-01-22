@@ -8,9 +8,7 @@ import (
 	"net/http"
 	"reflect"
 
-	"go.opentelemetry.io/otel"
 	apitrace "go.opentelemetry.io/otel/api/trace"
-	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/propagators"
 )
 
